@@ -17,8 +17,8 @@ class Ingredient(models.Model):
 
     class Meta:
         ordering = ['name']
-        verbose_name = 'ingredient'
-        verbose_name_plural = 'ingredients'
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
         return self.name
@@ -49,8 +49,8 @@ class Tag(models.Model):
 
     class Meta:
         ordering = ['name']
-        verbose_name = 'tag'
-        verbose_name_plural = 'tags'
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
 
     def __str__(self):
         return self.name
@@ -82,8 +82,8 @@ class Recipe(models.Model):
 
     class Meta:
         ordering = ['name']
-        verbose_name = 'recipe'
-        verbose_name_plural = 'recipes'
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
     def __str__(self):
         return self.name
@@ -106,6 +106,17 @@ class IngredientRecipeRelation(models.Model):
         decimal_places=2
     )
 
+    class Meta:
+        ordering = ['recipe']
+        verbose_name = 'Ингредиент для рецепта'
+        verbose_name_plural = 'Ингредиенты для рецептов'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('ingredient', 'recipe'),
+                name='unique_ingredient_to_recipe'
+            )
+        ]
+
     def __str__(self):
         return f'{self.ingredient} для {self.recipe}'
 
@@ -122,3 +133,14 @@ class UserRecipeRelation(models.Model):
     in_favorites = models.BooleanField(
         default=False
     )
+
+    class Meta:
+        ordering = ['recipe']
+        verbose_name = 'Рецепт добавлен в избранное'
+        verbose_name_plural = 'Рецепты добавленые в избранное'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe',),
+                name='unique_user_recipe_to_favorite'
+            )
+        ]
