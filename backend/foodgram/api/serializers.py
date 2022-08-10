@@ -3,9 +3,10 @@ from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer
 from drf_extra_fields.fields import Base64ImageField
 from drf_writable_nested.serializers import WritableNestedModelSerializer
-from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
+
+from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from users.models import Follow, User
 
 
@@ -27,7 +28,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             return user
 
         def validate_username(self, value):
-            if value == 'me':
+            if value.lower() == 'me':
                 raise serializers.ValidationError(
                     'Имя пользователя уже занято'
                 )
@@ -170,6 +171,19 @@ class RecipeCreateUpdateSerializer(WritableNestedModelSerializer):
             )
         return value
 
+    def create_update_recipe(self, ingredients_data, recipe):
+        ingredients = [
+            IngredientInRecipe(
+                recipe=recipe,
+                ingredient=get_object_or_404(
+                    Ingredient, id=ingredient_data['ingredient']['id']
+                ),
+                amount=ingredient_data['amount']
+            )
+            for ingredient_data in ingredients_data
+        ]
+        IngredientInRecipe.objects.bulk_create(ingredients)
+
     @transaction.atomic
     def create(self, validated_data):
         tags = validated_data.pop('tags')
@@ -178,22 +192,8 @@ class RecipeCreateUpdateSerializer(WritableNestedModelSerializer):
             author=self.context['request'].user, **validated_data
         )
         recipe.tags.set(tags)
-        for ingredient_data in ingredients_data:
-            ingredient = get_object_or_404(
-                Ingredient, id=ingredient_data['ingredient']['id']
-            )
-            amount = ingredient_data['amount']
-            IngredientInRecipe.objects.create(
-                recipe=recipe,
-                ingredient=ingredient,
-                amount=amount
-            )
+        self.create_update_recipe(ingredients_data, recipe)
         return recipe
-
-    def to_representation(self, instance):
-        return RecipesSerializer(
-            instance, context={'request': self.context.get('request')}
-        ).data
 
     @transaction.atomic
     def update(self, instance, validated_data):
@@ -202,17 +202,13 @@ class RecipeCreateUpdateSerializer(WritableNestedModelSerializer):
         instance.ingredients.clear()
         super().update(instance, validated_data)
         instance.tags.set(tags)
-        for ingredient_data in ingredients_data:
-            ingredient = get_object_or_404(
-                Ingredient, id=ingredient_data['ingredient']['id']
-            )
-            amount = ingredient_data['amount']
-            IngredientInRecipe.objects.create(
-                recipe=instance,
-                ingredient=ingredient,
-                amount=amount
-            )
+        self.create_update_recipe(ingredients_data, instance)
         return instance
+
+    def to_representation(self, instance):
+        return RecipesSerializer(
+            instance, context={'request': self.context.get('request')}
+        ).data
 
 
 class RecipesMiniSerializer(serializers.ModelSerializer):

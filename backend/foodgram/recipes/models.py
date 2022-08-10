@@ -25,6 +25,7 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
+    """Модель тега"""
     COLOR_CHOICES = (
         ('#E26C2D', 'Orange'),
         ('#49B64E', 'Green'),
@@ -105,9 +106,7 @@ class IngredientInRecipe(models.Model):
         null=True,
         verbose_name='Рецепт'
     )
-    amount = models.DecimalField(
-        max_digits=6,
-        decimal_places=1,
+    amount = models.PositiveSmallIntegerField(
         verbose_name='Количество'
     )
 
@@ -155,7 +154,7 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
-    """Модель добавления в избранное"""
+    """Модель добавления в корзину"""
     user = models.ForeignKey(
         User, on_delete=models.CASCADE,
         related_name='shopping_cart',

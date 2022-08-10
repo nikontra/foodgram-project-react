@@ -1,5 +1,7 @@
 import django_filters
+
 from django_filters.widgets import BooleanWidget
+
 from recipes.models import Recipe
 
 
