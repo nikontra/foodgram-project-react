@@ -11,17 +11,15 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
 from rest_framework.response import Response
 
 from foodgram.settings import LIST_SHOPPING
-from recipes.models import (Favorite, Ingredient, IngredientInRecipe,
-                            Recipe, ShoppingCart, Tag)
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
 from users.models import Follow, User
 from .filters import RecipeFilter
 from .mixins import ListCreateRetrieveUpdateDeleteMixin, ListRetrieveMixin
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (FollowSerializer, IngredientsSerializer,
-                          RecipeCreateUpdateSerializer,
-                          RecipesMiniSerializer, RecipesSerializer,
-                          TagsSerializer)
-
+                          RecipeCreateUpdateSerializer, RecipesMiniSerializer,
+                          RecipesSerializer, TagsSerializer)
 
 CONTENT_TYPE = 'text/plain'
 
