@@ -99,7 +99,7 @@ class RecipeViewSet(ListCreateRetrieveUpdateDeleteMixin):
     pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
-        queryset = Recipe.objects.annotate(
+        return Recipe.objects.annotate(
             is_favorited=Exists(
                 Subquery(
                     Favorite.objects.filter(
@@ -115,7 +115,6 @@ class RecipeViewSet(ListCreateRetrieveUpdateDeleteMixin):
                 )
             ),
         )
-        return queryset
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
