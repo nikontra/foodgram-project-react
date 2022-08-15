@@ -13,10 +13,10 @@ services:
       - ./.env
 
   backend:
-    image: nikontra/foodgram:latest
-    # build:
-    #   context: ../backend/foodgram
-    #   dockerfile: Dockerfile
+    # image: nikontra/foodgram:latest
+    build:
+      context: ../backend/foodgram
+      dockerfile: Dockerfile
     restart: always
     ports:
      - "8000:8000"
@@ -29,10 +29,10 @@ services:
       - ./.env
 
   frontend:
-    image: nikontra/foodgram_frontend:v1
-    # build:
-      # context: ../frontend
-      # dockerfile: Dockerfile
+    # image: nikontra/foodgram_frontend:v1
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
