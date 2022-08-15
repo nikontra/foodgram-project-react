@@ -6,8 +6,8 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
-from users.models import Follow, User
+from ..recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
+from ..users.models import Follow, User
 
 MIN_VALUE = 1
 
