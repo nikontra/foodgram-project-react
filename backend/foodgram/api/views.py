@@ -13,7 +13,7 @@ from foodgram.settings import LIST_SHOP
 from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
 from users.models import Follow, User
-from .filters import RecipeFilter
+from .filters import RecipeFilter, IngredientFilter
 from .mixins import ListCreateRetrieveUpdateDeleteMixin, ListRetrieveMixin
 from .paginations import CustomPageNumberRagination
 from .permissions import IsAuthorOrReadOnly
@@ -88,6 +88,8 @@ class IngredientViewSet(ListRetrieveMixin):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientsSerializer
     pagination_class = None
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
     permission_classes = [AllowAny]
 
 
