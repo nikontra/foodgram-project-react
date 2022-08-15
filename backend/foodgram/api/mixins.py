@@ -6,7 +6,8 @@ from rest_framework.viewsets import GenericViewSet
 
 class ListRetrieveMixin(GenericViewSet, RetrieveModelMixin, ListModelMixin):
     """Миксин для получения отдельного обьекта"""
-    search_fields = ('name',)
+    # search_fields = ('name',)
+    pass
 
 
 class ListCreateRetrieveUpdateDeleteMixin(GenericViewSet, CreateModelMixin,

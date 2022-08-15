@@ -5,21 +5,22 @@ from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from ..foodgram.settings import LIST_SHOPPING
-from ..recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
-                              ShoppingCart, Tag)
-from ..users.models import Follow, User
+from foodgram.settings import LIST_SHOP
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
+from users.models import Follow, User
 from .filters import RecipeFilter
 from .mixins import ListCreateRetrieveUpdateDeleteMixin, ListRetrieveMixin
+from .paginations import CustomPageNumberRagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (FollowSerializer, IngredientsSerializer,
                           RecipeCreateUpdateSerializer, RecipesMiniSerializer,
                           RecipesSerializer, TagsSerializer)
+
 
 CONTENT_TYPE = 'text/plain'
 
@@ -27,6 +28,7 @@ CONTENT_TYPE = 'text/plain'
 class CustomUserViewSet(UserViewSet):
     """Кастомный вьюсет пользователя"""
     http_method_names = ('get', 'post', 'delete',)
+    pagination_class = CustomPageNumberRagination
 
     @action(
         detail=False,
@@ -96,7 +98,7 @@ class RecipeViewSet(ListCreateRetrieveUpdateDeleteMixin):
     permission_classes = [IsAuthenticatedOrReadOnly & IsAuthorOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomPageNumberRagination
 
     def get_queryset(self):
         return Recipe.objects.annotate(
@@ -172,15 +174,11 @@ class RecipeViewSet(ListCreateRetrieveUpdateDeleteMixin):
         ).annotate(
             total_amount=Sum('amount')
         )
-        lines = []
-
-        for ingredient in ingredients:
-            name = ingredient['ingredient__name']
-            amount = ingredient['total_amount']
-            measurement_unit = ingredient['ingredient__measurement_unit']
-            lines += f'{name}: {amount} {measurement_unit}\n'
-
-        response = HttpResponse(content_type=CONTENT_TYPE)
-        response['Content-Disposition'] = 'attachment;', LIST_SHOPPING
-        response.writelines(lines)
+        shopping_cart = '\n'.join([
+            f'{ingredient["ingredient__name"]} - {ingredient["total_amount"]}'
+            f'{ingredient["ingredient__measurement_unit"]}'
+            for ingredient in ingredients
+        ])
+        response = HttpResponse(shopping_cart, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename={LIST_SHOP}'
         return response

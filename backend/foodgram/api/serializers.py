@@ -6,8 +6,10 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from ..recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
-from ..users.models import Follow, User
+from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
+from users.models import Follow, User
+
+MIN_VALUE = 1
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -147,29 +149,46 @@ class RecipeCreateUpdateSerializer(WritableNestedModelSerializer):
             'text', 'cooking_time'
         )
 
-    def validate(self, attrs):
-        self._kwargs['partial'] = True
-        return super().validate(attrs)
-
-    def validate_tags(self, value):
-        tags_id_list = []
-        for tag in value:
-            tags_id_list.append(tag)
-        if len(tags_id_list) != len(set(tags_id_list)):
+    def validate(self, data):
+        ingredients = data['ingredients']
+        if not ingredients:
             raise serializers.ValidationError(
-                'Тег уже добавлен к рецепту'
+                'Необходимо добавить хотя бы один ингредиент'
             )
-        return value
-
-    def validate_ingredients(self, value):
         ingredient_id_list = []
-        for ingredient in value:
+        for ingredient in ingredients:
+            if (not Ingredient.objects.filter(
+                    id=ingredient['ingredient']['id']).exists()):
+                raise serializers.ValidationError(
+                    'Такого ингредиента не существует'
+                )
+            if int(ingredient.get('amount')) < MIN_VALUE:
+                raise serializers.ValidationError(
+                    'Кол-во ингредиента не может быть меньше единицы'
+                )
             ingredient_id_list.append(ingredient['ingredient']['id'])
         if len(ingredient_id_list) != len(set(ingredient_id_list)):
             raise serializers.ValidationError(
-                'Ингредиент уже добавлен в рецепт'
+                'Ингредиент добавлен в рецепт дважды'
             )
-        return value
+
+        tags = data['tags']
+        if not tags:
+            raise serializers.ValidationError(
+                'Необходимо указать хотя бы один тег')
+        for tag in tags:
+            if not Tag.objects.filter(id=tag).exists():
+                raise serializers.ValidationError(
+                    'Такого тега не существует'
+                )
+
+        cooking_time = data['cooking_time']
+        if int(cooking_time) < MIN_VALUE:
+            raise serializers.ValidationError(
+                'Время приготовления не может быть меньше одной минуты'
+            )
+
+        return data
 
     def create_update_recipe(self, ingredients_data, recipe):
         ingredients = [
