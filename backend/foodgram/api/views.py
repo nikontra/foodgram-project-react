@@ -13,7 +13,7 @@ from foodgram.settings import LIST_SHOP
 from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
 from users.models import Follow, User
-from .filters import RecipeFilter, IngredientFilter
+from .filters import IngredientFilter, RecipeFilter
 from .mixins import ListCreateRetrieveUpdateDeleteMixin, ListRetrieveMixin
 from .paginations import CustomPageNumberRagination
 from .permissions import IsAuthorOrReadOnly
