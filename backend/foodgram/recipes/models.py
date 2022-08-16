@@ -15,13 +15,19 @@ class Ingredient(models.Model):
         verbose_name='Единицы измерения'
     )
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         ordering = ['name']
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-
-    def __str__(self):
-        return self.name
+        constraints = [
+            models.UniqueConstraint(
+                fields=('name', 'measurement_unit'),
+                name='unique_name_measurement_unit'
+            )
+        ]
 
 
 class Tag(models.Model):

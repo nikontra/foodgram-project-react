@@ -5,21 +5,12 @@ services:
     image: postgres:13.0-alpine
     volumes:
       - /var/lib/postgresql/data/
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kol@trest}
-      POSTGRES_USER: ${POSTGRES_USER:-foodgram_kolgate}
-      POSTGRES_DB: ${POSTGRES_DB:-foodgram_db}
     env_file:
       - ./.env
 
   backend:
-    # image: nikontra/foodgram:latest
-    build:
-      context: ../backend/foodgram
-      dockerfile: Dockerfile
+    image: nikontra/foodgram:latest
     restart: always
-    ports:
-     - "8000:8000"
     volumes:
       - static_value:/app/backend_static/
       - media_value:/app/backend_media/
@@ -29,10 +20,7 @@ services:
       - ./.env
 
   frontend:
-    # image: nikontra/foodgram_frontend:v1
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: nikontra/foodgram_frontend:v1
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
