@@ -8,6 +8,7 @@
  - добавление рецептов в избранное,
  - добавление рецептов в корзину,
  - скачивание списка покупок.
+ 
 Проект реализован на Django, в свою очередь API реализован с использованием библиотеки Django REST Framework (DRF).
 Проект запускаеться в трех контейнерах:
  - frontend
@@ -95,7 +96,9 @@ sudo docker-compose exec web python manage.py loaddata dump.json
 http://51.250.18.26/
 
 Superuser:
+
 login: kolgate
+
 password: kol@trest
 
 ![example workflow](https://github.com/nikontra/yamdb_final/actions/workflows/yamdb_workflow.yml/badge.svg)
