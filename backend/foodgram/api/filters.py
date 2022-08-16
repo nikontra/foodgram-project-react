@@ -1,14 +1,13 @@
 from django_filters.rest_framework import FilterSet, filters
 from django_filters.widgets import BooleanWidget
 
-from recipes.models import Ingredient, Recipe
+from recipes.models import Ingredient, Recipe, Tag
 
 
 class RecipeFilter(FilterSet):
     """Фильтр для модели Recipe"""
 
-    # TAG_CHOICES = tuple([(tag.slug, tag.slug) for tag in Tag.objects.all()])
-    TAG_CHOICES = ('',)
+    TAG_CHOICES = tuple([(tag.slug, tag.slug) for tag in Tag.objects.all()])
 
     tags = filters.MultipleChoiceFilter(
         field_name='tags__slug', choices=TAG_CHOICES

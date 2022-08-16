@@ -5,10 +5,6 @@ services:
     image: postgres:13.0-alpine
     volumes:
       - /var/lib/postgresql/data/
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kol@trest}
-      POSTGRES_USER: ${POSTGRES_USER:-foodgram_kolgate}
-      POSTGRES_DB: ${POSTGRES_DB:-foodgram_db}
     env_file:
       - ./.env
 
