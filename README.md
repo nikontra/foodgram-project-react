@@ -95,10 +95,4 @@ sudo docker-compose exec web python manage.py loaddata dump.json
 
 http://51.250.18.26/
 
-Superuser:
-
-login: kolgate
-
-password: kol@trest
-
 ![example workflow](https://github.com/nikontra/yamdb_final/actions/workflows/yamdb_workflow.yml/badge.svg)
